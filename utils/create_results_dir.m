@@ -48,6 +48,11 @@ switch type
         if contains(path, ppb.emuDirResearch)
             dirname = fullfile(ppb.emuDirResearch, strcat('EMU', ppb.emuID), ...
                 ppb.emuDirPreproName);
+        elseif contains(path, ppb.emuDirPreproName)
+            listing = split(path, filesep);
+            idc = find(strcmp(listing, ppb.emuDirPreproName));
+            dirname = join(listing(1:idc), filesep);
+            dirname = dirname{1};
         else
             dirname = fullfile(path, ppb.emuDirPreproName);
         end

@@ -1,4 +1,4 @@
-function save_as_edf(hdr, dat, filename, varargin)
+function [hdr, dat] = save_as_edf(hdr, dat, filename, varargin)
 
 % Fuction to save the data as edf
 % Syntax:

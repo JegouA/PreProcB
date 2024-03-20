@@ -87,6 +87,41 @@ ppb.preprocess.NFvalue = [];
 ppb.preprocess.badChannels = [];
 ppb.preprocess.badChannelsFilename = [];
 ppb.preprocess.data = [];
+ppb.preprocess.hdr = [];
 ppb.preprocess.filename = [];
+
+% Requirement Process
+ppb.process = struct();
+ppb.process.data = [];
+ppb.process.hdr = [];
+ppb.process.markers = [];
+ppb.process.filename = [];
+ppb.process.montage = [];
+ppb.process.downsample = [];
+ppb.process.normalize = [];
+ppb.process.filter = struct();
+ppb.process.filter.Broadband = zeros(1,2);
+ppb.process.overwrite = [];
+
+% Save separatly the data from process to use it as epoch or TF
+ppb.process.outdata = [];
+
+% Epochs the data
+ppb.process.epochs = struct();
+ppb.process.epochs.outdata = [];
+ppb.process.epochs.timeMarker = [];
+ppb.process.epochs.average = [];
+ppb.process.epochs.timeBefore = [];
+ppb.process.epochs.timeAfter = [];
+ppb.process.epochs.results = struct();
+
+% TF the data
+ppb.process.TF = struct();
+ppb.process.TF.psd = [];
+ppb.process.TF.map = [];
+ppb.process.TF.mapHg = [];
+ppb.process.TF.timeMarker = [];
+ppb.process.TF.outdata = [];
+ppb.process.TF.results = struct();
 
 end
