@@ -97,10 +97,12 @@ switch type
         [pks, loc] = findpeaks(ppb.seeg.trigData);
         numTrials = length(pks);
         % have to be careful with that car maybe not with spikes 
-        if numTrials ~= ppb.protocol.Summary.value.numTrials
+        if str2double(ppb.seeg.numBlock) == ppb.protocol.Summary.value.numBlocks && ...
+            numTrials ~= ppb.protocol.Summary.value.numTrials
             errordlg("Don't have the right number of trials")
             varargout{1} = ppb;
             varargout{2} = 1;
+            close(progBar);
             return
         end
         % Create trial with trigger only for now according to the protocols
@@ -258,7 +260,7 @@ switch type
 end
 
 if ~isempty(progBar)
-    waitbar(1, progBar, 'Alignement is over.');
+    waitbar(1, progBar, 'Alignement is done.');
     close(progBar);
 end
 

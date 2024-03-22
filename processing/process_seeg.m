@@ -47,7 +47,7 @@ end
 
 wt=0;
 if  nargin > 1
-    waitbar(0.4, progBar, 'Process running ...');
+    waitbar(0.4, progBar, 'Processing ...');
     val = 0.6/nbr;
     wt =1;
 end
@@ -74,12 +74,19 @@ for f=1:nbr
     % do the downsampling
     Fs = ppb.process.hdr.Fs;
     time = 1:ppb.process.hdr.nSamples;
+    markers = ppb.process.markers;
     if ~isempty(ppb.process.downsample) && ppb.process.downsample < ppb.process.hdr.Fs
         Fs = ppb.process.downsample;
         [dat, ~, ~] = ft_preproc_resample(dat, ppb.process.hdr.Fs, ...
             ppb.process.downsample, 'downsample');
         time = 1:size(dat, 2);
         suffix{end+1} = strcat('downsample-', num2str(Fs));
+
+        % Should rewrite the markers with the new downsample only
+        modFs = ppb.process.hdr.Fs/ppb.process.downsample;
+        markers.onset_sample = round(markers.onset_sample/modFs);
+        markers.duration_sample = round(markers.duration_sample/modFs);
+
     end
 
     % Create the montage
@@ -107,16 +114,21 @@ for f=1:nbr
     end
     
     ppb.process.outdata.(filterFields{f}) = data;
+    ppb.process.outdata.(filterFields{f}).markers = markers;
     ppb.process.outdata.(filterFields{f}).filename = fullfile(path, filename{1});
     if ~exist(ppb.process.outdata.(filterFields{f}).filename, 'file') || ...
             ppb.process.overwrite
         save(ppb.process.outdata.(filterFields{f}).filename, "data", '-v7.3');
+        % Save the markers
+        markfile = replace(filename{1}, '.mat', '_markers.csv');
+        writetable(ppb.process.outdata.(filterFields{f}).markers, ...
+            fullfile(path, markfile));
     else
         warndlg([filename{1} " already exist. It won't be saved."], "Warning Files!");
     end
 
     if wt
-        waitbar((0.4+val*f), progBar, 'Process running ...');
+        waitbar((0.4+val*f), progBar, 'Processing ...');
     end
 
 end

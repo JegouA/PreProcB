@@ -33,26 +33,28 @@ function ppb = preprocess_seeg(ppb, saveWithoutBad)
 %
 % February 2024
 
-progBar = waitbar(0, 'Filtering in process ...');
+progBar = waitbar(0, 'Filtering in progress ...');
 % Do the filtering
 suffix = {};
 seegData = ppb.seeg.data;
 if ppb.preprocess.NF
     ppb.preprocess.data = ft_preproc_dftfilter(seegData, ppb.seeg.hdr.Fs, ppb.preprocess.NFvalue);
     seegData = ppb.preprocess.data;
-    waitbar(0.3, progBar, 'Notch filtering is done ...');
+    waitbar(0.3, progBar, 'Notch filtering is done.');
     suffix{end+1} = strcat('nf', num2str(ppb.preprocess.NFvalue));
 end
 if ppb.preprocess.HF
     ppb.preprocess.data =  ft_preproc_highpassfilter(seegData, ...
         ppb.seeg.hdr.Fs,  ppb.preprocess.HFvalue, [], 'firws');
-    waitbar(0.6, progBar, 'High Pass filtering is done ...');
+    waitbar(0.6, progBar, 'High Pass filtering is done.');
     suffix{end+1} = strcat('hf', replace(num2str(ppb.preprocess.HFvalue), '.', ''));
 end
+
 % Save Bad Channels as txt file
 [~, filename, ~] = fileparts(ppb.seeg.filename);
 ppb.preprocess.badChannelsFilename = fullfile(ppb.emuDirPreprocessing, strcat(filename, '_badChannels.txt'));
 if ~isempty(ppb.preprocess.badChannels)
+    waitbar(0.8, progBar, 'Saving Bad Channels file ...');
     fid = fopen(ppb.preprocess.badChannelsFilename, 'w');
     for i = 1:length(ppb.preprocess.badChannels)
         fprintf(fid, '%s\n', ppb.preprocess.badChannels{i});
@@ -77,5 +79,7 @@ switch saveWithoutBad
         [ppb.preprocess.hdr, ppb.preprocess.data] = save_as_edf(ppb.seeg.hdr, ppb.preprocess.data, ...
             ppb.preprocess.filename);
 end
+waitbar(1, progBar, 'Preprocess is done.');
+close(progBar);
 end
 

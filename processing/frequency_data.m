@@ -59,7 +59,7 @@ if ppb.process.TF.psd
     ntrials = size(dat.trial,2);
     psdvalue = cell(1, ntrials);
     fvalue = cell(1, ntrials);
-    avg = zeros(nchan, round(window/2));
+    avg = zeros(nchan, round(noverlap)+1);
     for i=1:ntrials
         % channels have to be columns
         [pxx, f] = pwelch(dat.trial{i}', window, noverlap, window, ...
@@ -68,7 +68,8 @@ if ppb.process.TF.psd
         maxval = max(pxx);
         psdvalue{i} = (pxx./maxval)';
         fvalue{i} = f;
-        avg = avg + psdvalue{i};
+        t = 1:size(pxx, 1);
+        avg(:,t) = avg(:,t) + psdvalue{i};
     end
     avg = avg./ntrials;
 
@@ -83,8 +84,11 @@ if ppb.process.TF.map
 
     % Check the highest freq is relevant with the size window
     hgval = ppb.process.TF.mapHg;
-    if hgval > nsamp/2
-        hgval = round(nsamp/2);
+    if hgval > nsamp || hgval > dat.fsample || hgval == 0
+        nval = min([round(nsamp/2) round(dat.fsample/2)]);
+        hgval = nval;
+        msgbox(sprintf("The highest frequency has been changed to %d Hz, to fit the constraint of the signal.", ...
+            hgval));
     end
     cfg =[];
     cfg.method = 'hilbert';

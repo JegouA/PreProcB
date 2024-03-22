@@ -65,14 +65,18 @@ switch method
                     if tf ==1
                         SEEGfile = SEEGfile(indx);
                     else
-                        errordlg(['Preprocessing cannot be processed on multiple ' ...
+                        errordlg(['Preprocessing cannot be done on multiple ' ...
                             'files if no concatenation !!!']);
                         varargout{1} = ppb;
                         return
                     end
             end
         else
-            ppb.seeg.filename = SEEGfile{1};
+            [~, file, ~] = fileparts(SEEGfile{1});
+            newname = fullfile(ppb.emuDirPreprocessing, strcat(file, '.edf'));
+            ppb.seeg.filename = char(newname);
+            copyfile(SEEGfile{1}, newname);
+
             % Read SEEG file header to get the channels
             ppb.seeg.hdr = ft_read_header(ppb.seeg.filename);
 
@@ -102,10 +106,10 @@ switch method
             ppb.protocol.Trigger_Events.value.value, 'un', 0);
         ppb.seeg.trigValue = cellfun(@str2num, unique(cat(1, trigVal{:})));
         % Read SEEG to get the Trigger channels
-        if ~isfield(ppb.seeg, 'hdr')
+        if ~isfield(ppb.seeg, 'hdr') || isempty(ppb.seeg.hdr)
             ppb.seeg.hdr = ft_read_header(ppb.seeg.filename);
         end
-        if ~isfield(ppb.seeg, 'data')
+        if ~isfield(ppb.seeg, 'data') || isempty(ppb.seeg.data)
             ppb.seeg.data = ft_read_data(ppb.seeg.filename);
         end
         idxtrig = find(strcmp(ppb.seeg.hdr.label, ppb.seeg.trigChan));
@@ -124,7 +128,7 @@ switch method
         return
     case 'read'
         if nfiles > 1
-            errordlg(['There is more than 1 SEEG files, please Align before' ...
+            errordlg(['There is more than one SEEG files, please align it before' ...
                 'to do any preprocess.']);
             varargout{1} = ppb;
             varargout{2} = 1;

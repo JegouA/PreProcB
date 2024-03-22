@@ -85,7 +85,7 @@ hdrreference.nSamples = size(datreference, 2);
 % Update the fbar
 nfiles = size(orderSEEG, 1);
 ntim = 0.9/nfiles;
-waitbar(ntim, fbar, 'First file has been process')
+waitbar(ntim, fbar, 'First file has been processed.')
 
 % Save differently the data because not the same channels
 datCell = cell(nfiles, 2);
@@ -97,7 +97,7 @@ for f=2:nfiles
     hdr = ft_read_header(orderSEEG{f, 1});
     if hdr.Fs ~= hdrreference.Fs
         errordlg(["The file " orderSEEG{f, 1} ...
-            " doesn't have the same sampling frequency that the first one"])
+            " doesn't have the same sampling frequency that the first one."])
         varargout{1} = ppb;
         return
     end
@@ -107,7 +107,7 @@ for f=2:nfiles
     else
         begsample = orderSEEG{f, 5} * hdr.Fs;
         if begsample > hdr.nSamples || begsample < 1
-            errordlg(["The selected Start for " orderSEEG{f,1} " is not correct"])
+            errordlg(["The selected Start for " orderSEEG{f,1} " is not correct."])
             ppb = concatenate_data(SEEGfile, ppb);
             varargout{1} = ppb;
             return
@@ -118,7 +118,7 @@ for f=2:nfiles
     else
         endsample = orderSEEG{f, 6} * hdr.Fs;
         if endsample > hdr.nSamples || endsample < begsample
-            errordlg(["The selected End for " orderSEEG{f,1} " is not correct"])
+            errordlg(["The selected End for " orderSEEG{f,1} " is not correct."])
             ppb = concatenate_data(SEEGfile, ppb);
             varargout{1} = ppb;
             return
@@ -142,7 +142,7 @@ for f=2:nfiles
     idTrig = (strcmp(hdr.label, orderSEEG{f, 7}));
     dattrig = dat(idTrig, :);
     dattrigRef = cat(2, dattrigRef, dattrig);
-    waitbar(ntim*f, fbar, sprintf('File %d  has been processed', f))
+    waitbar(ntim*f, fbar, sprintf('File %d  has been processed.', f))
 end
 % According to the channels
 chanCom = intersect(datCell{:,2});
@@ -206,7 +206,7 @@ ppb.seeg.eventsFilename = replace(newname, '.edf', '_events.csv');
 ft_write_data(char(newname), datFinal, 'header', hdrft); % , 'event', evtreference
 % Write events separately as it's not working with fieldtrip
 writetable(evtTab, ppb.seeg.eventsFilename, 'Delimiter', ','); % As to check for the name
-waitbar(1, fbar, 'Concatenation is done')
+waitbar(1, fbar, 'Concatenation is done.')
 
 ppb.seeg.trigChan = {'TRIG'};
 ppb.seeg.hdr = hdrft;

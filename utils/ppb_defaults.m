@@ -101,7 +101,7 @@ ppb.process.downsample = [];
 ppb.process.normalize = [];
 ppb.process.filter = struct();
 ppb.process.filter.Broadband = zeros(1,2);
-ppb.process.overwrite = [];
+ppb.process.overwrite = 0;
 
 % Save separatly the data from process to use it as epoch or TF
 ppb.process.outdata = [];
@@ -119,7 +119,7 @@ ppb.process.epochs.results = struct();
 ppb.process.TF = struct();
 ppb.process.TF.psd = [];
 ppb.process.TF.map = [];
-ppb.process.TF.mapHg = [];
+ppb.process.TF.mapHg = 0;
 ppb.process.TF.timeMarker = [];
 ppb.process.TF.outdata = [];
 ppb.process.TF.results = struct();
