@@ -64,12 +64,37 @@ switch method
                         'SelectionMode','single','ListString',SEEGfile);
                     if tf ==1
                         SEEGfile = SEEGfile(indx);
+                        [~, file, ~] = fileparts(SEEGfile);
+                        newname = fullfile(ppb.emuDirPreprocessing, strcat(file, '.edf'));
+                        ppb.seeg.filename = char(newname);
+                        copyfile(SEEGfile{1}, newname);
+            
+                        % Read SEEG file header to get the channels
+                        ppb.seeg.hdr = ft_read_header(ppb.seeg.filename);
+            
+                        % Select the trigger types
+                        trigIdx = (strcmp(ppb.seeg.hdr.chantype, 'trigger'));
+                        % Don't know why but doesn't accept the types from
+                        % concatenate_data
+                        if all(trigIdx == 0)
+                             trigIdx = (startsWith(ppb.seeg.hdr.label, 'TRIG'));
+                        end
+                        trigChanPossibility = ppb.seeg.hdr.label(trigIdx);
+                        varargout{1} = ppb;
+                        varargout{2} = trigChanPossibility;
+                        return
                     else
                         errordlg(['Preprocessing cannot be done on multiple ' ...
                             'files if no concatenation !!!']);
                         varargout{1} = ppb;
+                        varargout{2} = [];
                         return
                     end
+                case ''
+                    errordlg('No decision was made !!!');
+                    varargout{1} = ppb;
+                    varargout{2} = [];
+                    return
             end
         else
             [~, file, ~] = fileparts(SEEGfile{1});

@@ -67,9 +67,14 @@ if isempty(ppb.preprocess.data)
 end
 
 % New name of the edf file
-suffix = join(suffix, '_');
-ppb.preprocess.filename = fullfile(ppb.emuDirPreprocessing, ...
-    strcat(filename, '_', suffix{1}, '.edf'));
+if ~isempty(suffix)
+    suffix = join(suffix, '_');
+    ppb.preprocess.filename = fullfile(ppb.emuDirPreprocessing, ...
+        strcat(filename, '_', suffix{1}, '.edf'));
+else
+    ppb.preprocess.filename = fullfile(ppb.emuDirPreprocessing, ...
+        strcat(filename, '.edf'));
+end
 
 switch saveWithoutBad
     case 'Yes'

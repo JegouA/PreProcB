@@ -90,19 +90,27 @@ switch type
             idxsquare{i, 1} = idx;
             idxsquare{i, 2} = max(value);
             idxsquare{i, 3} = ppb.protocol.Trigger_Events.value.triggerEventName(i);
-            idxsquare{i, 4} = ppb.protocol.Trigger_Events.value.triggerExptCondition(i);
+            idxsquare{i, 4} = ppb.protocol.Trigger_Events.value.labelingExptCondition(i);
         end
         % Check the type of trigger and detect them
         % take the min peak height omitting 0
         [pks, loc] = findpeaks(ppb.seeg.trigData);
         numTrials = length(pks);
+        blockName = ppb.protocol.Summary.value.blockVarName{1};
+        numBlockBeh = unique(ppb.behavior.data.(blockName));
         % have to be careful with that car maybe not with spikes 
         if str2double(ppb.seeg.numBlock) == ppb.protocol.Summary.value.numBlocks && ...
             numTrials ~= ppb.protocol.Summary.value.numTrials
             errordlg("Don't have the right number of trials")
             varargout{1} = ppb;
             varargout{2} = 1;
-            close(progBar);
+            return
+        elseif str2double(ppb.seeg.numBlock) ~= ppb.protocol.Summary.value.numBlocks && ...
+            length(numBlockBeh) ~= str2double(ppb.seeg.numBlock)
+            errordlg("Number of blocks in edf files is different of the number " + ...
+                "of blocks in Behavior data.")
+            varargout{1} = ppb;
+            varargout{2} = 1;
             return
         end
         % Create trial with trigger only for now according to the protocols
@@ -134,8 +142,8 @@ switch type
             % to write ate the down
             samp = find(ppb.seeg.trigData(1, trialDuration) == 0);
             sampFinal = trialDuration(samp(1));
-            idTb = find(cell2mat(idxsquare(:,2)) == pks(n) & ...
-                    cell2mat(idxsquare(:,1)) == 2);
+            idTb = cell2mat(idxsquare(:,2)) == pks(n) & ...
+                    cell2mat(idxsquare(:,1)) == 2;
             blocks{nblock, 1}(ntrial, idTb) = sampFinal;
             if length(trialDuration) > 2 *ptrialDur
                 nblock = nblock +1 ;
@@ -156,8 +164,6 @@ switch type
             'onset_sample', 'onset_seconds', 'duration_sample', 'duration_seconds'});
         % Add the block number has marker with duration, put the start 2s
         % before
-        blockName = ppb.protocol.Summary.value.blockVarName{1};
-        numBlockBeh = unique(ppb.behavior.data.(blockName));
         if length(numBlockBeh) < ppb.protocol.Summary.value.numBlocks
             % Warning or errors ??
             answer = questdlg(['The number of Blocks in the behavior file is different of the protocol.' ...
@@ -168,6 +174,7 @@ switch type
                 return
             end
         end
+        % Take the beginning of the block two seconds before the marker
         deb = 2 * ppb.seeg.hdr.Fs;
         indT = 1;
         for b=1:ppb.protocol.Summary.value.numBlocks
@@ -219,7 +226,7 @@ switch type
                             tmpBehval = str2double(tmpBehval);
                         end
                         markerTable.name(indT) = interestHeader{cond};
-                        if ~isempty(lab)
+                        if ~isempty(lab{1}) 
                             markerTable.name(indT) = strcat(markerTable.name(indT), ...
                                 "_", blockTab.(lab{1}){n});
                         end

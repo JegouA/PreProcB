@@ -84,9 +84,9 @@ data = struct();
 data.label = ppb.process.outdata.(field).label;
 data.fsample = Fs;
 data.trial = trials;
-data.time = times;
+data.xtime = times;
 data.timeOnset = timesOnset;
-data.xtime = xtime;
+data.time = xtime;
 data.avg = avg;
 
 ppb.process.epochs.results.(field).(markerId).data = data;

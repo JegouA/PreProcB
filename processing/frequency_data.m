@@ -46,10 +46,14 @@ data.label = dat.label;
 data.fsample = dat.fsample;
 
 
-nsamp = length(dat.xtime);
+nsamp = length(dat.time);
 nchan = length(dat.label);
 if nsamp > dat.fsample
-    window = dat.fsample;     
+    window = dat.fsample;    
+elseif nsamp < 2
+    errordlg('The length of the signal is too small!')
+    close(progBar);
+    return
 else
     window = nsamp;
 end
@@ -90,14 +94,19 @@ if ppb.process.TF.map
         msgbox(sprintf("The highest frequency has been changed to %d Hz, to fit the constraint of the signal.", ...
             hgval));
     end
+    % For fieldtrip, I have to exchange the xtime and time that I changed
+    % for bst
+    tmpdat = dat;
+    tmpdat.time = dat.xtime;
+    tmpdat.xtime = dat.time;
     cfg =[];
     cfg.method = 'hilbert';
     cfg.output = 'pow';
     cfg.foi= 0:5:hgval;
     cfg.toi = 'all';
     cfg.bpfilttype = 'firws';
-    TFmap = ft_freqanalysis(cfg, dat);
-    TFmap.xtime = dat.xtime;
+    TFmap = ft_freqanalysis(cfg, tmpdat);
+    TFmap.xtime = tmpdat.xtime;
 
     %%% NORMALIZATION NOT WORKING %%%
     % % Take only 1 min to do the baseline

@@ -38,6 +38,13 @@ myapp = concatenate(SEEGfile);
 while myapp.done == 0
     pause(0.05)
 end
+if myapp.done == 2
+    errordlg(["Concatenate window has been closed without change, " + ...
+        "concatenation is aborted !!!"]);
+    myapp.closeWindow;
+    varargout{1} = ppb;
+    return
+end
 % Get SEEG order
 SEEGfile = myapp.SEEGfile;
 myapp.closeWindow;

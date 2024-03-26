@@ -54,7 +54,8 @@ ppb.behavior.header = ppb.behavior.data.Properties.VariableNames;
 isIn = cellfun(@(x) ismember(x, ppb.behavior.header), ...
     ppb.protocol.Trial_Variables.value.variableName, 'un', 0);
 varargout{1} = ppb;
-if ~all(cell2mat(isIn) == 1)
+isIn = cell2mat(isIn);
+if ~all(isIn == 1)
     missingVariable = ppb.protocol.Trial_Variables.value.variableName(~isIn);
     toWrite = join(cellstr(missingVariable), ', ');
     if iscell(toWrite)

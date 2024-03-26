@@ -4,8 +4,13 @@ Tis project has two goals. The first one is to align the event of behavior data 
 
 ## Description
 
-This project can be run with graphical interface or by using the functions. It is link to the EMU data server but can be used without.
-...
+This project can be run using graphical interface or by using the functions. It is link to the EMU data server but can be used locally.
+Preprocessing focuses on the alignement of the behavior events to SEEG data. The events are created in csv table, and
+also in AnyWave marker, so it can be imported in AnyWave and Brainstorm. If there is multiple SEEG files for one behavior, 
+the SEEG files are concatenated to have only one version. A protocol file is required for this part.
+Processing is divided in three parts. The firs part is to prepre the data with filtering, dowsampling and montage. The second part
+is to create the epochs according to specific marker name. The last part is to perform Time-Frequency analysis on the epochs. At each par, a mat-file
+is saved containing a fieldtrip structure that can be imported in Brainstrom.
 
 ## Getting Started
 
@@ -22,7 +27,7 @@ If not using apps:
 
 ## Help
 
-Read the tutorial (not done yet^^). 
+Read the tutorial (draft available). 
 Please contact Aude Jegou for any questions. If error appears, send it to Aude with screenshot of the error.
 
 ## Authors
