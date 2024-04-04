@@ -41,6 +41,12 @@ else
     return
 end
 
+if isempty(ppb.emuID)
+    me = MException('MATLAB:notEnoughInputs','EMU ID not present.');
+    throw(me)
+end
+
+
 switch type
     case 'preprocessing'
         % Check the path

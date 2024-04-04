@@ -2,6 +2,16 @@
 
 All notable changes to the project PreProcB will be documented in this file.
 
+## [1.1.2] - 2024-04-4
+
+### Fixed
+
+- Creating an error if EMU ID is not given in Processing panel because cannot write the output path.
+
+### Changed
+
+- For the markers, I change the duration to 0 to make it as a single event and be able to use it in Brainstorm to create epochs.
+
 ## [1.1.1] - 2024-03-26
 
 ### Fixed

@@ -203,7 +203,7 @@ switch type
                     end
                     markerTable.name(indT) = join([prefix, suffix], '_');
                     markerTable.onset_sample(indT) = tmp(m);
-                    markerTable.duration_sample(indT) = 1;
+                    markerTable.duration_sample(indT) = 0;
                     indT = indT+1;
                 end
                 for cond=1:length(interestHeader)
@@ -232,7 +232,7 @@ switch type
                         end
                         markerTable.onset_sample(indT) = round(tmp(idrel) + ...
                             tmpBehval*ppb.seeg.hdr.Fs);
-                        markerTable.duration_sample(indT) = 1;
+                        markerTable.duration_sample(indT) = 0;
                         indT = indT+1;
                     end
                 end
@@ -240,7 +240,7 @@ switch type
         end
         markerTable(indT:end,:) = []; 
         markerTable.onset_seconds = markerTable.onset_sample / ppb.seeg.hdr.Fs;
-        markerTable.duration_seconds = markerTable.duration_sample / ppb.seeg.hdr.Fs;                
+        markerTable.duration_seconds = markerTable.duration_sample / ppb.seeg.hdr.Fs; 
         
         if ~isempty(progBar)
             waitbar(0.8, progBar, 'Saving the markers files ...');

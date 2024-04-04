@@ -35,6 +35,7 @@ function ppb = process_seeg(ppb, progBar)
 % Create the directory to save output
 ppb = create_results_dir(ppb, 'preprocessing', ppb.process.filename);
 
+
 % Do the filtering part and save mat file for each, what happen if there is
 % not filter dselected ???/
 filterFields = fieldnames(ppb.process.filter);
