@@ -2,6 +2,12 @@
 
 All notable changes to the project PreProcB will be documented in this file.
 
+## [1.2.1] - 2024-04-10
+
+### Added
+
+- Adding option in processing to reject the bad trials form epoching
+
 ## [1.1.2] - 2024-04-4
 
 ### Fixed
