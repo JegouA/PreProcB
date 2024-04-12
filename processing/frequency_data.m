@@ -37,9 +37,13 @@ progBar = waitbar(0, 'Time-Frequency in progress ...');
 field = ppb.process.TF.outdata;
 markerId = ppb.process.TF.timeMarker;
 dat = ppb.process.epochs.results.(field).(markerId).data;
-% get the signal to normalize (test)
-% beg = round(ppb.process.markers.onset_seconds(1) * ppb.process.outdata.(field).fsample);
-% dataAll = ppb.process.outdata.(field);
+NormalizeVar = ppb.process.normalizeTF;
+beg = [];
+if NormalizeVar
+    % get the signal to normalize (test)
+    beg = ppb.process.markers.onset_seconds(1);
+    dataAll = ppb.process.outdata.(field);
+end
 %To write the results
 data = struct();
 data.label = dat.label;
@@ -48,35 +52,56 @@ data.fsample = dat.fsample;
 
 nsamp = length(dat.time);
 nchan = length(dat.label);
-if nsamp > dat.fsample
-    window = dat.fsample;    
-elseif nsamp < 2
+% Check the highest freq is relevant with the size window
+hgval = ppb.process.TF.mapHg;
+if hgval > nsamp || hgval > dat.fsample || hgval == 0
+    nval = min([round(nsamp/2) round(dat.fsample/2)]);
+    hgval = nval;
+    msgbox(sprintf("The highest frequency has been changed to %d Hz, to fit the constraint of the signal.", ...
+        hgval));
+end
+
+
+   
+if nsamp < 2
     errordlg('The length of the signal is too small!')
     close(progBar);
     return
-else
-    window = nsamp;
 end
 if ppb.process.TF.psd
     waitbar(0.2, progBar, 'PSD in progress ...');
-    noverlap = window/2;
-    ntrials = size(dat.trial,2);
-    psdvalue = cell(1, ntrials);
-    fvalue = cell(1, ntrials);
-    avg = zeros(nchan, round(noverlap)+1);
-    for i=1:ntrials
-        % channels have to be columns
-        [pxx, f] = pwelch(dat.trial{i}', window, noverlap, window, ...
-            dat.fsample);
-        % To get a sort of norm
-        maxval = max(pxx);
-        psdvalue{i} = (pxx./maxval)';
-        fvalue{i} = f;
-        t = 1:size(pxx, 1);
-        avg(:,t) = avg(:,t) + psdvalue{i};
+    if NormalizeVar
+        %%% PSD implented by me with normalization by maximum
+        [psdvalue, avg, fvalue] = psdNormalize(dat, hgval);
+    else
+        %%% PSD with pwelch %%%
+        if nsamp > dat.fsample
+            window = dat.fsample;
+        else
+            window = nsamp;
+        end
+        noverlap = window/2;
+        ntrials = size(dat.trial,2);
+        psdvalue = cell(1, ntrials);
+        fvalue = cell(1, ntrials);
+        avg = zeros(nchan, round(noverlap)+1);
+        for i=1:ntrials
+            % channels have to be columns
+            [pxx, f] = pwelch(dat.trial{i}', window, noverlap, window, ...
+                dat.fsample);
+            % To get a sort of norm WRONG have to do it by trials not by
+            % channels
+            % maxval = max(pxx);
+            % psdvalue{i} = (pxx./maxval)';
+            fvalue{i} = f;
+            psdvalue{i} = pxx';
+            t = 1:size(pxx, 1);
+            avg(:,t) = avg(:,t) + psdvalue{i};
+        end
+        avg = avg./ntrials;
     end
-    avg = avg./ntrials;
-
+    
+    
     data.avgPSD = avg;
     data.trialPSD = psdvalue;
     data.fPSD = fvalue;
@@ -86,14 +111,6 @@ end
 if ppb.process.TF.map
     waitbar(0.6, progBar, 'TFmap in progress ...');
 
-    % Check the highest freq is relevant with the size window
-    hgval = ppb.process.TF.mapHg;
-    if hgval > nsamp || hgval > dat.fsample || hgval == 0
-        nval = min([round(nsamp/2) round(dat.fsample/2)]);
-        hgval = nval;
-        msgbox(sprintf("The highest frequency has been changed to %d Hz, to fit the constraint of the signal.", ...
-            hgval));
-    end
     % For fieldtrip, I have to exchange the xtime and time that I changed
     % for bst
     tmpdat = dat;
@@ -108,26 +125,38 @@ if ppb.process.TF.map
     TFmap = ft_freqanalysis(cfg, tmpdat);
     TFmap.xtime = tmpdat.xtime;
 
-    %%% NORMALIZATION NOT WORKING %%%
-    % % Take only 1 min to do the baseline
-    % if dataAll.time{1}(beg) > 60
-    %     beg = 60*dataAll.fsample;
-    % end
-    % dataBase = [];
-    % dataBase.label = data.label;
-    % dataBase.fsample = dataAll.fsample;
-    % dataBase.trial = cell(1,1);
-    % dataBase.time = cell(1,1);
-    % dataBase.trial{1} = dataAll.trial{1}(:,1:beg);
-    % dataBase.time{1} = dataAll.time{1}(1,1:beg);
-    % TFmapBase = ft_freqanalysis(cfg, dataBase);
-    % 
-    % % norm
-    % mu = mean(TFmapBase.powspctrm, 3);
-    % sigma = std(TFmapBase.powspctrm, [], 3);
-    % 
-    % TFnorm = bsxfun(@minus, TFmap.powspctrm, mu);
-    % TFnorm = bsxfun(@rdivide, TFnorm, sigma);
+    if NormalizeVar & beg >= 20
+        %%% NORMALIZATION NOT WORKING %%%
+        % % Take only 1 min to do the baseline
+        if beg > 60
+            beg = 60*dataAll.fsample;
+        else
+            beg = beg*dataAll.fsample;
+        end
+        dataBase = [];
+        dataBase.label = dataAll.label;
+        dataBase.fsample = dataAll.fsample;
+        dataBase.trial = cell(1,1);
+        dataBase.time = cell(1,1);
+        dataBase.trial{1} = dataAll.trial{1}(:,1:beg);
+        dataBase.time{1} = dataAll.time{1}(1,1:beg);
+        cfg =[];
+        cfg.method = 'hilbert';
+        cfg.output = 'pow';
+        cfg.foi= 0:5:hgval;
+        cfg.toi = 'all';
+        cfg.bpfilttype = 'firws';
+        TFmapBase = ft_freqanalysis(cfg, dataBase);
+    
+        powspctrm = zeros(size(TFmap.powspctrm));
+        for i=1:length(dataBase.label)
+            tfSZ = squeeze(TFmap.powspctrm(i,:,:));
+            tfBG = squeeze(TFmapBase.powspctrm(i,:,:));
+            tfNorm = zSOI_normalisation(tfSZ, tfBG);
+            powspctrm(i,:,:) = tfNorm;
+        end
+        TFmap.powspctrm = powspctrm;
+    end
 
     data.TFmap = TFmap;
 end

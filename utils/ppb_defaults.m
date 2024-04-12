@@ -99,6 +99,7 @@ ppb.process.filename = [];
 ppb.process.montage = [];
 ppb.process.downsample = [];
 ppb.process.normalize = [];
+ppb.process.normalizeTF = [];
 ppb.process.filter = struct();
 ppb.process.filter.Broadband = zeros(1,2);
 ppb.process.overwrite = 0;

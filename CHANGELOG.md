@@ -7,6 +7,12 @@ All notable changes to the project PreProcB will be documented in this file.
 ### Added
 
 - Adding option in processing to reject the bad trials form epoching
+- Adding the option to normalize the Time-frequency analysis to avoid 1/f
+- Adding information in one message box
+
+### Changed
+
+- Highest frequency value in TF processing is now determine by default but still can be changed 
 
 ## [1.1.2] - 2024-04-4
 
