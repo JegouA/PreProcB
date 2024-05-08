@@ -100,7 +100,11 @@ switch method
             [~, file, ~] = fileparts(SEEGfile{1});
             newname = fullfile(ppb.emuDirPreprocessing, strcat(file, '.edf'));
             ppb.seeg.filename = char(newname);
-            copyfile(SEEGfile{1}, newname);
+            try
+                copyfile(SEEGfile{1}, newname);
+            catch
+                msgbox('File is already in SEEGprocessing');
+            end
 
             % Read SEEG file header to get the channels
             ppb.seeg.hdr = ft_read_header(ppb.seeg.filename);

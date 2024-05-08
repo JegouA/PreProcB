@@ -125,4 +125,11 @@ ppb.process.TF.timeMarker = [];
 ppb.process.TF.outdata = [];
 ppb.process.TF.results = struct();
 
+% Connectivity data
+ppb.process.connectivity = struct();
+ppb.process.connectivity.method = [];
+ppb.process.connectivity.outdata = [];
+ppb.process.connectivity.timeMarker = [];
+ppb.process.connectivity.results = struct();
+
 end

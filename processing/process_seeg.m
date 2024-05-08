@@ -106,6 +106,7 @@ for f=1:nbr
         time = time./Fs;
     end
     data.time = {time};
+    data.filtervalue = rangeFreq;
 
     % Write mat file, waiting for Steve to have the nomenclature
     [path, file, ~] = fileparts(ppb.process.filename);

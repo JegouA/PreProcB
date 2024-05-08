@@ -2,6 +2,16 @@
 
 All notable changes to the project PreProcB will be documented in this file.
 
+## [1.3.1] - 2024-05-08
+
+### Added
+
+- Adding functionnal connectivity process, for now only Cross-correlation
+
+### Fixed
+
+- minor bugs
+
 ## [1.2.1] - 2024-04-10
 
 ### Added
