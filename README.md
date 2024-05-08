@@ -1,22 +1,22 @@
 # PreProcB
 
-Tis project has two goals. The first one is to align the event of behavior data to the SEEG signal, and the second is to provide a small SEEG processing.
+This project has two goals. The first is to align the event of behavior data to the SEEG signal, and the second is to provide some small SEEG processing.
 
 ## Description
 
-This project can be run using graphical interface or by using the functions. It is link to the EMU data server but can be used locally.
-Preprocessing focuses on the alignement of the behavior events to SEEG data. The events are created in csv table, and
-also in AnyWave marker, so it can be imported in AnyWave and Brainstorm. If there is multiple SEEG files for one behavior, 
+This project can be run using graphical interfaces or by using the functions. It is linked to the EMU data server but can be used locally.
+Preprocessing focuses on the alignment of the behavioral events to SEEG data. The events are created in a csv table and
+also in AnyWave marker, so it can be imported in AnyWave and Brainstorm. If there are multiple SEEG files for one behavior file, then 
 the SEEG files are concatenated to have only one version. A protocol file is required for this part.
-Processing is divided in three parts. The firs part is to prepre the data with filtering, dowsampling and montage. The second part
-is to create the epochs according to specific marker name. The last part is to perform Time-Frequency analysis on the epochs. At each par, a mat-file
+Processing is divided in three parts. The first part is to prepare the data with filtering, dowsampling and a montage. The second part
+is to create the epochs according to specific marker names. The last part is to perform Time-Frequency analysis on the epochs. At each part, a mat-file
 is saved containing a fieldtrip structure that can be imported in Brainstrom.
 
 ## Getting Started
 
 ### Dependencies
 
-* Matlab installes
+* Matlab installed
 If not using apps:
 * fieldtrip toolbox
 
