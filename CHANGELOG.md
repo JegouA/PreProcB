@@ -2,6 +2,13 @@
 
 All notable changes to the project PreProcB will be documented in this file.
 
+## [1.3.2] - 2024-05-17
+
+### Fixed
+
+- Visualization after the filtering, dowsampling, montage process
+- Adding a minimum value for the frequency of the TFmap depending of the filter value
+
 ## [1.3.1] - 2024-05-08
 
 ### Added

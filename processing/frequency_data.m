@@ -49,7 +49,6 @@ data = struct();
 data.label = dat.label;
 data.fsample = dat.fsample;
 
-
 nsamp = length(dat.time);
 nchan = length(dat.label);
 % Check the highest freq is relevant with the size window
@@ -61,6 +60,17 @@ if hgval > nsamp || hgval > dat.fsample || hgval == 0
         hgval));
 end
 
+% Check the lowest frequency
+minfreq = ppb.process.outdata.(field).filtervalue(1);
+if isempty(minfreq) || minfreq == 0
+    minfreq =1;
+end
+% determine the band size
+nband = 5;
+dif = mod((hgval - minfreq),nband);
+if dif~=0
+    nband = (hgval - minfreq)/dif;
+end
 
    
 if nsamp < 2
@@ -119,14 +129,14 @@ if ppb.process.TF.map
     cfg =[];
     cfg.method = 'hilbert';
     cfg.output = 'pow';
-    cfg.foi= 0:5:hgval;
+    cfg.foi= minfreq:nband:hgval;
     cfg.toi = 'all';
     cfg.bpfilttype = 'firws';
     TFmap = ft_freqanalysis(cfg, tmpdat);
     TFmap.xtime = tmpdat.xtime;
 
     if NormalizeVar & beg >= 20
-        %%% NORMALIZATION NOT WORKING %%%
+        %%% NORMALIZATION WORKING but to verify %%%
         % % Take only 1 min to do the baseline
         if beg > 60
             beg = 60*dataAll.fsample;
@@ -143,7 +153,7 @@ if ppb.process.TF.map
         cfg =[];
         cfg.method = 'hilbert';
         cfg.output = 'pow';
-        cfg.foi= 0:5:hgval;
+        cfg.foi= minfreq:nband:hgval;
         cfg.toi = 'all';
         cfg.bpfilttype = 'firws';
         TFmapBase = ft_freqanalysis(cfg, dataBase);
