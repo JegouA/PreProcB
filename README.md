@@ -33,7 +33,7 @@ Please contact Aude Jegou for any questions. If error appears, send it to Aude w
 ## Authors
 
 Contributors names and contact info:
-* Aude Jegou (main developer): auj10@pitt.edu
+* Aude Jegou (main developer): jegou.aude@gmail.com
 * Eliza Reedy (protocols & behavior data): reedyem@upmc.edu
 * Steven Salazar (database & EMU server): sas901@pitt.edu
 
