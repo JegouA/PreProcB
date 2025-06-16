@@ -39,4 +39,4 @@ Contributors names and contact info:
 
 ## License
 
-This project is under GPL-v3 License.
+This code was developed during a research project at CorsyLab and is released under GPLv3 license with the authorization of the PI.
