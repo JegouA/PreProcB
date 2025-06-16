@@ -29,11 +29,6 @@ function ppb = ppb_defaults(emuDir)
 
 % Make ppb Global
 ppb = struct();
-% if ismac
-%     ppb.emuDir = "smb//cortex.neurosurgery.pitt.edu";
-% elseif ispc
-%     ppb.emuDir = "\\cortex.neurosurgery.pitt.edu";
-% end
 ppb.emuDir = emuDir;
 ppb.emuDirResearch = fullfile(ppb.emuDir, "EMU research data");
 ppb.emuDirPreproName = "SEEGpreprocessing";
